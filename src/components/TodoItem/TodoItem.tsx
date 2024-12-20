@@ -24,15 +24,29 @@ export const TodoItem: React.FC<TodoItemProps> = ({ id, title, isDone, updateTod
     const MIN_TODO_LENGTH = 2;
     const MAX_TODO_LENGTH = 64;
     if (todoTextValidation(taskValue, MIN_TODO_LENGTH, MAX_TODO_LENGTH)) {
-      await editTodo(id, { title: taskValue, isDone: isDone });
-      updateTodos();
+      try {
+        await editTodo(id, { title: taskValue, isDone: isDone });
+        await updateTodos();
+      } catch (error) {
+        console.error('Error handle submit while editing:', error);
+        throw error;
+      }
       toggleIsEditing();
+    } else {
+      alert(
+        `Задача должна содержать от ${MIN_TODO_LENGTH} до ${MAX_TODO_LENGTH} символов`
+      );
     }
   }
 
   async function handleToggleChecked() {
-    await editTodo(id, { isDone: !isDone });
-    updateTodos();
+    try {
+      await editTodo(id, { isDone: !isDone });
+      await updateTodos();
+    } catch (error) {
+      console.error('Error handle toggle checked:', error);
+      throw error;
+    }
   }
 
   async function handleDelete() {

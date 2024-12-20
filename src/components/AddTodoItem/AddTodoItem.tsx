@@ -18,9 +18,18 @@ export const AddTodoItem: React.FC<AddTodoItemProps> = ({ updateTodos }) => {
     const MIN_TODO_LENGTH = 2;
     const MAX_TODO_LENGTH = 64;
     if (todoTextValidation(taskValue, MIN_TODO_LENGTH, MAX_TODO_LENGTH)) {
-      await addTodo({ title: taskValue, isDone: false });
-      updateTodos();
+      try {
+        await addTodo({ title: taskValue, isDone: false });
+        await updateTodos();
+      } catch (error) {
+        console.error('Error handle submit while adding:', error);
+        throw error;
+      }
       setInputValue('');
+    } else {
+      alert(
+        `Задача должна содержать от ${MIN_TODO_LENGTH} до ${MAX_TODO_LENGTH} символов`
+      );
     }
   }
 

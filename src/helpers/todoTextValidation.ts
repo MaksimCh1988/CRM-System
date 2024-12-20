@@ -4,7 +4,5 @@ export function todoTextValidation(todoText: string, min: number, max: number) {
     return true;
   }
 
-  alert('Задача должна содержать от 2 до 64 символов');
-
   return false;
 }

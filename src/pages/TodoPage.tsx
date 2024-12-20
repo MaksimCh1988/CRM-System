@@ -1,6 +1,6 @@
 import styles from './TodoPage.module.scss';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Filters, Todo, TodoInfo } from '../types/types';
 
@@ -19,7 +19,7 @@ export const TodoPage = () => {
     inWork: 0,
   });
 
-  const updateTodos = useCallback(async () => {
+  async function updateTodos() {
     try {
       const responseData = await getTodos(filter);
       if (responseData && responseData.data && responseData.info) {
@@ -28,12 +28,17 @@ export const TodoPage = () => {
       }
     } catch (error) {
       console.error('Error updating todos:', error);
+      throw error;
     }
-  }, [filter]);
+  }
 
   useEffect(() => {
     updateTodos();
-  }, [filter, updateTodos]);
+  }, []);
+
+  useEffect(() => {
+    updateTodos();
+  }, [filter]);
 
   return (
     <div className={styles.container}>

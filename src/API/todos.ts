@@ -1,10 +1,12 @@
 import { MetaResponse, Todo, TodoInfo, Filters, TodoRequest } from '../types/types';
 
+const url = 'https://easydev.club/api/v1/todos'
+
 export async function getTodos(
   filter: Filters
 ): Promise<MetaResponse<Todo, TodoInfo> | undefined> {
   try {
-    const response = await fetch(`https://easydev.club/api/v1/todos?filter=${filter}`);
+    const response = await fetch(`${url}?filter=${filter}`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -15,12 +17,13 @@ export async function getTodos(
     return data;
   } catch (error) {
     console.error('Error fetching:', error);
+    throw error;
   }
 }
 
 export async function addTodo(todo: TodoRequest): Promise<Todo | undefined> {
   try {
-    const response = await fetch('https://easydev.club/api/v1/todos', {
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,12 +39,13 @@ export async function addTodo(todo: TodoRequest): Promise<Todo | undefined> {
     return data;
   } catch (error) {
     console.error('Error adding todo:', error);
+    throw error;
   }
 }
 
 export async function deleteTodo(id: number): Promise<void> {
   try {
-    const response = await fetch(`https://easydev.club/api/v1/todos/${id}`, {
+    const response = await fetch(`${url}/${id}`, {
       method: 'DELETE',
     });
 
@@ -50,6 +54,7 @@ export async function deleteTodo(id: number): Promise<void> {
     }
   } catch (error) {
     console.error('Error deleting todo:', error);
+    throw error;
   }
 }
 
@@ -58,7 +63,7 @@ export async function editTodo(
   todo: TodoRequest
 ): Promise<Todo | undefined> {
   try {
-    const response = await fetch(`https://easydev.club/api/v1/todos/${idTodo}`, {
+    const response = await fetch(`${url}/${idTodo}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -74,5 +79,6 @@ export async function editTodo(
     return data;
   } catch (error) {
     console.error('Error editing todo:', error);
+    throw error;
   }
 }

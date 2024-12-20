@@ -4,12 +4,13 @@
   box-sizing: border-box;
 }
 
-:where(ul, ol):where([class]) {
+ul,
+ol {
   padding-left: 0;
   margin: 0;
 }
 
-:where(ul[class]) {
+ul {
   list-style: none;
 }
 
@@ -28,5 +29,4 @@ html {
 body {
   min-height: 100%;
   line-height: 1.5;
-  
 }
