@@ -1,33 +1,33 @@
 import React from 'react';
 import { TodoInfo, Filters } from '../../types/types';
-import styles from './ListFilter.module.scss';
+import { Space, Button } from 'antd';
 
 interface ListFilterProps {
   statistic: TodoInfo;
-  currentFilter: Filters;
   changeFilter: (value: Filters) => void;
 }
 
-export const ListFilter: React.FC<ListFilterProps> = ({ statistic, changeFilter, currentFilter }) => {
+export const ListFilter: React.FC<ListFilterProps> = ({ statistic, changeFilter }) => {
   const filters = [
     { label: 'Все', count: statistic.all, value: Filters.all },
     { label: 'В работе', count: statistic.inWork, value: Filters.inWork },
-    { label: 'Сделано', count: statistic.completed, value: Filters.completed }
+    { label: 'Сделано', count: statistic.completed, value: Filters.completed },
   ];
 
   const handleFilterChange = (filterValue: Filters) => () => changeFilter(filterValue);
 
   return (
-    <div className={styles.listFilter}>
+    <Space.Compact block size="large">
       {filters.map(({ label, count, value }) => (
-        <button
+        <Button
           key={value}
-          className={`${styles.button} ${currentFilter === value ? styles.buttonActive : ''}`}
+          size="large"
+          style={{ width: '33.3%' }}
           onClick={handleFilterChange(value)}
         >
           {`${label} (${count})`}
-        </button>
+        </Button>
       ))}
-    </div>
+    </Space.Compact>
   );
 };

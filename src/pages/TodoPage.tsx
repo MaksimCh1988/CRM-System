@@ -1,5 +1,3 @@
-import styles from './TodoPage.module.scss';
-
 import { useState, useEffect } from 'react';
 
 import { Filters, Todo, TodoInfo } from '../types/types';
@@ -9,6 +7,8 @@ import { ListFilter } from '../components/ListFilter/ListFilter';
 import { TodoList } from '../components/TodoList/TodoList';
 
 import { getTodos } from '../API/todos';
+
+import { Flex } from 'antd';
 
 export const TodoPage = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -41,10 +41,10 @@ export const TodoPage = () => {
   }, [filter]);
 
   return (
-    <div className={styles.container}>
+    <Flex vertical gap="small" style={{ margin: '2rem auto', maxWidth: '500px' }}>
       <AddTodoItem updateTodos={updateTodos} />
-      <ListFilter statistic={statistic} currentFilter={filter} changeFilter={setFilter} />
+      <ListFilter statistic={statistic} changeFilter={setFilter} />
       <TodoList todos={todos} updateTodos={updateTodos} />
-    </div>
+    </Flex>
   );
 };

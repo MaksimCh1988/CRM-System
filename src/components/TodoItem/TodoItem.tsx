@@ -1,43 +1,35 @@
 import { useState } from 'react';
 import { Todo } from '../../types/types';
-import { todoTextValidation } from '../../helpers/todoTextValidation';
+
 import { editTodo, deleteTodo } from '../../API/todos';
-import styles from './TodoItem.module.scss';
+import { List, Form, Input, Checkbox, FormProps, Button, Space } from 'antd';
 
 interface TodoItemProps extends Todo {
   updateTodos: () => void;
 }
 
+type FieldType = {
+  [id: number]: string;
+};
+
 export const TodoItem: React.FC<TodoItemProps> = ({ id, title, isDone, updateTodos }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [inputValue, setInputValue] = useState<string>(title);
+  const [formEdit] = Form.useForm();
 
   function toggleIsEditing() {
     setIsEditing((prev) => !prev);
-    setInputValue(title);
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const taskValue = formData.get('todoTextInput') as string;
-    const MIN_TODO_LENGTH = 2;
-    const MAX_TODO_LENGTH = 64;
-    if (todoTextValidation(taskValue, MIN_TODO_LENGTH, MAX_TODO_LENGTH)) {
-      try {
-        await editTodo(id, { title: taskValue, isDone: isDone });
-        await updateTodos();
-      } catch (error) {
-        console.error('Error handle submit while editing:', error);
-        throw error;
-      }
-      toggleIsEditing();
-    } else {
-      alert(
-        `Задача должна содержать от ${MIN_TODO_LENGTH} до ${MAX_TODO_LENGTH} символов`
-      );
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+    try {
+      await editTodo(id, { title: values[id] });
+      await updateTodos();
+    } catch (error) {
+      console.error('Error while adding a task:', error);
+      throw error;
     }
-  }
+    toggleIsEditing();
+  };
 
   async function handleToggleChecked() {
     try {
@@ -50,60 +42,82 @@ export const TodoItem: React.FC<TodoItemProps> = ({ id, title, isDone, updateTod
   }
 
   async function handleDelete() {
-    await deleteTodo(id);
+    try {
+      await deleteTodo(id);
+    } catch (error) {
+      console.error('Error ehile deleting:', error);
+      throw error;
+    }
     updateTodos();
   }
 
+  const rules = [
+    { required: true, message: 'Введите задачу' },
+    { min: 2, message: 'Не менее 2 символов' },
+    { max: 64, message: 'Не более 64 символов' },
+    {
+      pattern: /^(?=.*[^\s]).*$/,
+      message: 'Как минимум один символ, отличный от пробела',
+    },
+  ];
+
   return (
-    <div className={styles.todoItem}>
-      <div className={styles.todoTitle}>
+    <List.Item>
+      <Form
+        name={`${id}`}
+        onFinish={onFinish}
+        autoComplete="off"
+        form={formEdit}
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          width: '100%',
+          alignItems: 'center',
+          gap: '5px',
+        }}
+        initialValues={{ [id]: title }}
+      >
         {isEditing ? (
-          <form id="todoTextForm" onSubmit={handleSubmit}>
-            <input
-              name="todoTextInput"
-              className={styles.todoTextInput}
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Введите задачу"
-            />
-          </form>
+          <Form.Item
+            name={id}
+            rules={rules}
+            style={{ width: '70%', marginBlock: '24px' }}
+            validateTrigger={['onSubmit']}
+            
+          >
+            <Input placeholder="Введите новую задачу" size="small" autoFocus />
+          </Form.Item>
         ) : (
-          <>
-            <label className={isDone ? styles.todoLabelChecked : styles.todoLabel}>
-              <input
-                className={styles.customCheckbox}
-                type="checkbox"
-                name={title}
-                checked={isDone}
-                onChange={handleToggleChecked}
-              />
-              {title}
-            </label>
-          </>
-        )}
-      </div>
-
-      <div className={styles.buttonsPanel}>
-        {isEditing ? (
-          <>
-            <button className={styles.buttonBlue} type="submit" form="todoTextForm">
-              💾
-            </button>
-            <button className={styles.buttonBlue} onClick={toggleIsEditing}>
-              ❌
-            </button>
-          </>
-        ) : (
-          <button className={styles.buttonBlue} onClick={toggleIsEditing}>
-            📝
-          </button>
+          <Checkbox
+            onChange={handleToggleChecked}
+            checked={isDone}
+            style={{ textDecoration: isDone ? 'line-through' : '' }}
+          >
+            {title}
+          </Checkbox>
         )}
 
-        <button className={styles.buttonRed} onClick={handleDelete}>
-          🗑️
-        </button>
-      </div>
-    </div>
+        <Space.Compact>
+          {isEditing ? (
+            <>
+              <Button size="small" onClick={()=>formEdit.submit()}>
+                💾
+              </Button>
+              <Button size="small" onClick={toggleIsEditing}>
+                ❌
+              </Button>
+            </>
+          ) : (
+            <Button size="small" onClick={toggleIsEditing}>
+              📝
+            </Button>
+          )}
+
+          <Button size="small" onClick={handleDelete}>
+            🗑️
+          </Button>
+        </Space.Compact>
+      </Form>
+    </List.Item>
   );
 };

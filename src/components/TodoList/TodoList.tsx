@@ -1,7 +1,7 @@
 import React from 'react';
 import { Todo } from '../../types/types';
 import { TodoItem } from '../TodoItem/TodoItem';
-import styles from './TodoList.module.scss';
+import { List } from 'antd';
 
 export interface TodoListProps {
   todos: Todo[];
@@ -10,12 +10,10 @@ export interface TodoListProps {
 
 export const TodoList: React.FC<TodoListProps> = ({ todos, updateTodos }) => {
   return (
-    <ul className={styles.todoList}>
+    <List size="large" style={{ width: '100%' }} bordered>
       {todos.map((todo) => (
-        <li key={todo.id}>
-          <TodoItem {...todo} updateTodos={updateTodos} />
-        </li>
+        <TodoItem key={todo.id} {...todo} updateTodos={updateTodos} />
       ))}
-    </ul>
+    </List>
   );
 };
