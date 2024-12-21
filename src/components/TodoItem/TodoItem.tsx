@@ -44,11 +44,11 @@ export const TodoItem: React.FC<TodoItemProps> = ({ id, title, isDone, updateTod
   async function handleDelete() {
     try {
       await deleteTodo(id);
+      await updateTodos();
     } catch (error) {
-      console.error('Error ehile deleting:', error);
+      console.error('Error while deleting:', error);
       throw error;
     }
-    updateTodos();
   }
 
   const rules = [
@@ -83,7 +83,6 @@ export const TodoItem: React.FC<TodoItemProps> = ({ id, title, isDone, updateTod
             rules={rules}
             style={{ width: '70%', marginBlock: '24px' }}
             validateTrigger={['onSubmit']}
-            
           >
             <Input placeholder="Введите новую задачу" size="small" autoFocus />
           </Form.Item>
@@ -100,7 +99,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ id, title, isDone, updateTod
         <Space.Compact>
           {isEditing ? (
             <>
-              <Button size="small" onClick={()=>formEdit.submit()}>
+              <Button size="small" onClick={() => formEdit.submit()}>
                 💾
               </Button>
               <Button size="small" onClick={toggleIsEditing}>

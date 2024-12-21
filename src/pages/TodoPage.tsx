@@ -22,6 +22,7 @@ export const TodoPage = () => {
   async function updateTodos() {
     try {
       const responseData = await getTodos(filter);
+      console.log(responseData)
       if (responseData && responseData.data && responseData.info) {
         setTodos(responseData.data);
         setStatistic(responseData.info);
@@ -32,9 +33,9 @@ export const TodoPage = () => {
     }
   }
 
-  useEffect(() => {
+/*   useEffect(() => {
     updateTodos();
-  }, []);
+  }, []);  лишний рендер*/
 
   useEffect(() => {
     updateTodos();
